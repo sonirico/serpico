@@ -1,0 +1,9 @@
+.serpico {
+    width: 100%;
+    background-color: lavender;
+}
+
+.serpico .item {
+    display: inline-block;
+    text-align: center;
+}
