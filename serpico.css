@@ -1,9 +1,24 @@
 .serpico {
+
     width: 100%;
     background-color: lavender;
+
 }
 
 .serpico .item {
+
     display: inline-block;
     text-align: center;
+    box-sizing: border-box;
+    border: 2px dotted black;
+}
+
+@media (max-width: 468px) {
+
+    .serpico .item {
+
+        width: 100% !important;
+
+    }
+
 }

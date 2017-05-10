@@ -15,18 +15,56 @@
 
     <div class="serpico" ></div>
 
-    <button type="button" id="adder">Add more images</button>
+    <hr/>
+
+    <button type="button" id="adder">Add</button>
+    <button type="button" id="sorter">Sort</button>
+
+    <hr/>
+
+    <p>Filters</p>
+
+    <button type="button" class="filterer" data-filter="_all" >All</button>
+    <br/>
+    <button type="button" class="filterer" data-filter="odd" >Odd</button>
+    <button type="button" class="filterer" data-filter="even" >Even</button>
+
 
     <script>
 
+      function r () {
+          return parseInt(Math.random() * 50);
+      };
+
       $(function () {
+
           var $serpico = $('.serpico').serpico();
 
+          // ADD
+          var c = 4;
           $('#adder').click(function () {
+              c++;
+
               $serpico.add([
-                {src: 'img4', sort: 0},
-                {src: 'img5', sort: 2}
+                {src: 'img' + c, sort: r(), filter: oddOrNot(c)},
+                {src: 'img' + (c + 1), sort: r(), filter: oddOrNot(c + 1)}
               ]);
+          });
+
+          // FILTER
+          $('.filterer').click(function () {
+
+              $serpico.filter(
+                $(this).data('filter')
+              );
+
+          });
+
+          // SORT
+          $('#sorter').click(function () {
+
+              $serpico.sort();
+
           });
       });
 
