@@ -26,23 +26,93 @@ function oddOrNot (n) {
           {src: 'img3', sort: 2, filter: oddOrNot(2)},
         ],
         minHeight: '100px',
-        sortField: 'sort',
+        sortAttribute: 'sort',
         filterAll: '_all',
-        filterAttribute: 'filter',//TODO: filter function as parameters
+        filterAttribute: 'filter',//TODO: filtering function as parameters
         filterSeparator: " ",
         onFilterGlobal: function (target) {
 
         },
-        onFilterItem: function (item) {
-
+        onFilterItem: function (item, action) { // TODO: Implement "none" action
+            defaultOnFilterItem(item, action);
         },
-        onSortGlobal: function (target) {
-
+        onSortGlobal: function (target, sortAttribute) {
+            animatedSort(target, sortAttribute);
         },
         onSortItem: function () {
 
         }
     };
+
+    function defaultOnFilterItem (item, action) {
+        item.stop(true, true);
+
+        switch (action) {
+          case "hide":
+            item.fadeOut('slow');
+            break;
+          case "show":
+            item.fadeIn('slow');
+            break;
+          default:
+
+        }
+
+    }
+
+    function animatedSort (parent, sortAttribute) {
+        var promises = [];
+
+        var originalItems = parent.find('.item');
+        var originalPositions = [];
+        parent.css('height', parent.height() + 'px');
+
+        var sortedItems = originalItems.toArray().sort(function (a, b) {
+
+            return $(a).data(sortAttribute) > $(b).data(sortAttribute);
+
+        });
+
+        originalItems.each(function () {
+
+            originalPositions.push($(this).position());
+
+        }).each(function (originalIndex, v) {
+            var $originalItem = $(this);
+            var sortedItemIndex = sortedItems.indexOf(this);
+
+            if (originalIndex === sortedItemIndex) {
+              return;
+            }
+
+            sortedItems[sortedItemIndex] = $originalItem.clone();
+            sortedItems[sortedItemIndex].data($originalItem.data());
+
+            $originalItem.css({
+                'position': 'absolute',
+                'top': originalPositions[originalIndex].top + 'px',
+                'left': originalPositions[originalIndex].left + 'px'
+            });
+
+            var promise = $originalItem.animate({
+                'top': originalPositions[sortedItemIndex].top + 'px',
+                'left': originalPositions[sortedItemIndex].left + 'px'
+            }).promise();
+
+            promises.push(promise);
+        });
+
+        Promise.all(promises).then(function () {
+            originalItems.each(function(index) {
+                $sorted = sortedItems[index];
+
+                $(this).replaceWith($sorted);
+            });
+
+            // Restore parent height
+            parent.css('height', 'auto');
+        });
+    }
 
     function Gallery (target, config) {
         var me = this;
@@ -52,7 +122,7 @@ function oddOrNot (n) {
             var w = (100 / config.columns) + '%';
 
             data.forEach(function (item, index) {
-              
+
                 target.append(
                     $('<div>')
                       .addClass('item')
@@ -83,7 +153,9 @@ function oddOrNot (n) {
         me.filter = function (keyword) {
             if (keyword === config.filterAll) {
 
-                target.find('.item').show();
+                target.find('.item').each(function () {
+                    config.onFilterItem($(this), 'show');
+                });
 
             } else {
 
@@ -93,9 +165,9 @@ function oddOrNot (n) {
                         .split(config.filterSeparator);
 
                     if (keyword.indexOf(filters) < 0) {
-                        $(this).hide();
+                        config.onFilterItem($(this), 'hide');
                     } else {
-                        $(this).show();
+                        config.onFilterItem($(this), 'show');
                     }
                 });
 
@@ -103,11 +175,15 @@ function oddOrNot (n) {
         }
 
         me.sort = function (dataAttribute) {
-            target.find('.item').sort(function (a, b) {
 
-                return $(a).data(config.sortField) - $(b).data(config.sortField);
+            var dataAttribute = dataAttribute || config.sortAttribute;
 
-            }).appendTo(target);
+            config.onSortGlobal(target, dataAttribute);
+            // target.find('.item').sort(function (a, b) {
+            //
+            //     return $(a).data(config.sortField) - $(b).data(config.sortField);
+            //
+            // }).appendTo(target);
         };
 
         me.init();
