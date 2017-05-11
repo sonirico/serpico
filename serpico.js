@@ -21,9 +21,9 @@ function oddOrNot (n) {
         namespace: 'serpico',
         columns: 3,
         data: [
-          {src: 'img1', sort: 1, filter: oddOrNot(1)},
-          {src: 'img2', sort: 3, filter: oddOrNot(3)},
-          {src: 'img3', sort: 2, filter: oddOrNot(2)},
+          // {src: 'img1', sort: 1, filter: oddOrNot(1)},
+          // {src: 'img2', sort: 3, filter: oddOrNot(3)},
+          // {src: 'img3', sort: 2, filter: oddOrNot(2)},
         ],
         minHeight: '100px',
         sortAttribute: 'sort',
@@ -129,10 +129,12 @@ function oddOrNot (n) {
                       .css({
                           'width': w
                       })
-                      .data(item)
-                      .html(
-                          JSON.stringify(item, null, 2)
+                      .append(item)
+                      .attr(
+                          'title',
+                          JSON.stringify(item.dataset, null, 2)
                       )
+                      .data(item.dataset)
                 );
             });
         }
@@ -179,11 +181,6 @@ function oddOrNot (n) {
             var dataAttribute = dataAttribute || config.sortAttribute;
 
             config.onSortGlobal(target, dataAttribute);
-            // target.find('.item').sort(function (a, b) {
-            //
-            //     return $(a).data(config.sortField) - $(b).data(config.sortField);
-            //
-            // }).appendTo(target);
         };
 
         me.init();

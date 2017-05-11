@@ -13,24 +13,42 @@
   <body>
     <h1>Serpico</h1>
 
-    <div class="serpico" ></div>
+        <hr/>
 
-    <hr/>
+        <button type="button" id="adder">Add</button>
+        <button type="button" id="sorter">Sort</button>
 
-    <button type="button" id="adder">Add</button>
-    <button type="button" id="sorter">Sort</button>
+        <hr/>
 
-    <hr/>
+        <p>Filters</p>
 
-    <p>Filters</p>
+        <button type="button" class="filterer" data-filter="_all" >All</button>
 
-    <button type="button" class="filterer" data-filter="_all" >All</button>
-    <br/>
-    <button type="button" class="filterer" data-filter="odd" >Odd</button>
-    <button type="button" class="filterer" data-filter="even" >Even</button>
+        <br/>
 
+        <button type="button" class="filterer" data-filter="odd" >Odd</button>
+        <button type="button" class="filterer" data-filter="even" >Even</button>
 
+        <hr/>
+
+        <div class="serpico" ></div>
+        
     <script>
+
+      var loadImage = function () {
+          return new Promise(function (resolve, reject) {
+              var image = new Image();
+              image.src = "https://unsplash.it/200/150";
+              image.onload = function () {
+                  console.log('image loaded');
+                  resolve(image);
+              };
+              image.onerror = function () {
+                  console.log('image error');
+                  reject();
+              };
+          });
+      }
 
       function r () {
           return parseInt(Math.random() * 50);
@@ -41,14 +59,16 @@
           var $serpico = $('.serpico').serpico();
 
           // ADD
-          var c = 4;
           $('#adder').click(function () {
-              c++;
+              Promise.all([loadImage(), loadImage(), loadImage()]).then(function (images) {
 
-              $serpico.add([
-                {src: 'img' + c, sort: r(), filter: oddOrNot(c)},
-                {src: 'img' + (c + 1), sort: r(), filter: oddOrNot(c + 1)}
-              ]);
+                images.forEach(function (img) {
+                    img.dataset.sort = r();
+                    img.dataset.filter = oddOrNot(r());
+                });
+
+                $serpico.add(images);
+              });
           });
 
           // FILTER
