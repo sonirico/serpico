@@ -153,6 +153,7 @@ function oddOrNot (n) {
         };
 
         me.filter = function (keyword) {
+
             if (keyword === config.filterAll) {
 
                 target.find('.item').each(function () {

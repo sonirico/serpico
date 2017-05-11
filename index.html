@@ -32,13 +32,13 @@
         <hr/>
 
         <div class="serpico" ></div>
-        
+
     <script>
 
       var loadImage = function () {
           return new Promise(function (resolve, reject) {
               var image = new Image();
-              image.src = "https://unsplash.it/200/150";
+              image.src = "http://loremflickr.com/320/240";
               image.onload = function () {
                   console.log('image loaded');
                   resolve(image);
